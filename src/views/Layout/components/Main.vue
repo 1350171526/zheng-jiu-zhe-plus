@@ -6,7 +6,7 @@ import Like from '@/views/MainList/Like.vue'
 import Share from '@/views/MainList/Share.vue'
 import More from '@/views/MainList/More.vue'
 
-import { onMounted } from "vue"
+import { onMounted, ref } from "vue"
 onMounted(()=>{
   findvideocover()
 })
@@ -51,6 +51,30 @@ const findvideocover = () =>{
   }
 }
 
+// 鼠标双击点赞
+let timer = null
+let changeLike = ref(false)
+const like = () =>{
+  clearTimeout(timer);
+  changeLike.value = !changeLike.value
+}
+
+const video = ref(null)
+// 控制视频播放和暂停
+const isplay = () =>{
+  clearTimeout(timer); //清除未执行的定时器
+  timer = setTimeout(function () {
+    if(video.value.paused){
+      video.value.play()
+    }else{
+      video.value.pause()
+    }
+  }, 400);
+
+  
+
+  
+}
 </script>
 
 <template>
@@ -74,6 +98,7 @@ const findvideocover = () =>{
       <!-- 当前视频 -->
       <div class="left">
         <video 
+          ref="video"
           id="upvideo"
           playsinline="true"
           :src="props.urlArr[props.index]" 
@@ -88,13 +113,14 @@ const findvideocover = () =>{
         ></video>
         <div class="list">
           <div><Avatar/></div>
-          <div><Like/></div>
+          <div><Like :changeLike ="changeLike" ></Like></div>
           <div><Comment/></div>
           <div><Collect/></div>
           <div><Share/></div>
           <div><More/></div>
         </div>
         <canvas id='mycanvas'></canvas>
+        <div class="layer" @dblclick="like" @click="isplay"></div>
       </div>
       <!-- 预加载后一个视频 -->
       <div class="left">
@@ -153,21 +179,25 @@ const findvideocover = () =>{
   display: flex;
   align-items: center;
   overflow: hidden;
+
   .video{
     display: flex;
     flex-direction: column;
     width: 95%;
     height: 100%;
-
-    
     .left{
-
       position: relative;
       border-radius: 20px;
       border: none;
       background-color: rgba(0, 0, 0, 0.3); 
       overflow: hidden;
-      
+      .layer{
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 90%;
+      z-index: 100;
+    }
       &:nth-child(2){
         height: 100%;
         width: 100%;
@@ -183,7 +213,7 @@ const findvideocover = () =>{
       right: 0;
       top: 25%;
       transform: translateX(-50%);
-      z-index: 100;
+      z-index: 101;
 
     }
     video{

@@ -1,15 +1,31 @@
 <!-- 点赞 -->
 <script setup>
 import { inject,ref, watch } from "vue"
+
+const props = defineProps({
+  changeLike: {
+    type: Boolean,
+    default:1
+  }
+})
+
 const change = inject('change')
 let number = ref()
 number.value = Math.floor(Math.random() * (10000 - 0 + 1)) + 0
 // 切换视频时通过provide传递参数改变number
-
 watch(change, () => {  
+  // console.log(changeLike);
   isSelect.value=false
   number.value = Math.floor(Math.random() * (10000 - 0 + 1)) + 0
 }); 
+
+// const isLike = ref()
+
+watch(props, () => {  
+  // console.log(changeLike);
+  like()
+}); 
+
 
 const isSelect = ref(false)
 // 前端调用接口获取视频时传入参数（当前用户id，当前视频id）
