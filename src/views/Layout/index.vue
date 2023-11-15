@@ -3,7 +3,7 @@
   import Headers from "./components/Header.vue";
   import Main from "./components/Main.vue";
   // import { ElMessage } from 'element-plus'
-import { getVedioApi,getMusicApi,getHotApi } from '@/apis/video';
+import { getVedioApi } from '@/apis/video';
 import { onMounted, ref, onBeforeUnmount, provide } from 'vue';
 
 
@@ -11,14 +11,13 @@ const urlArr = ref([])
 let type = ref("total")
 // 获取首页视频
 // 后端返回一组视频的每条视频应该包含视频链接、视频作者id、头像信息、是否被此用户关注点赞或收藏，视频id、点赞数、评论数、收藏数、分享数、等信息
-const getVedio =async () =>{
-  type.value = "total"
-  const res = await getVedioApi()
+const getVedio =async (type) =>{
+  const res = await getVedioApi(type)
   urlArr.value = res.data.vedioArr
 }
 
 onMounted(() => {
-  getVedio()
+  getVedio(type.value)
   keyListen()
 })
 // 页面卸载钱移除监听事件
@@ -54,26 +53,9 @@ const nextVedio =async () =>{
   }else{
     change.value = !change.value
     // 判断视频的分类
-    switch (type.value) {  
-      case "total":  
-        const res = await getVedioApi()
-        urlArr.value = [...urlArr.value,...res.data.vedioArr]
-        index.value++
-        break;  
-      case "music":  
-        const res1 = await getMusicApi()
-        urlArr.value = [...urlArr.value,...res1.data.vedioArr]
-        index.value++ 
-        break;  
-      case "hot":  
-        const res2 = await getHotApi()
-        urlArr.value = [...urlArr.value,...res2.data.vedioArr]
-        index.value++  
-        break;  
-      default:  
-        break;  
-    }
-    
+    const res = await getVedioApi(type.value)
+    urlArr.value = [...urlArr.value,...res.data.vedioArr]
+    index.value++
   }
   nextTigger = now
 }
@@ -97,30 +79,13 @@ const lastVedio = () =>{
   lastTigger = now
 }
 
-// 点击首页全部视频
-const clickVideo = () =>{
+// 点击侧边栏分类视频
+const clickVideo = (types) =>{
+  type.value = types
   urlArr.value = []
   index.value = 0
-  getVedio()
+  getVedio(type.value)
 }
-// 点击音乐视频
-const clickMusic =async () =>{
-  urlArr.value = []
-  index.value = 0
-  type.value = "music"
-  const res = await getMusicApi()
-  urlArr.value = res.data.vedioArr
-}
-// 点击热门视频
-const clickHot =async () =>{
-  urlArr.value = []
-  index.value = 0
-  type.value = "hot"
-  const res = await getHotApi()
-  urlArr.value = res.data.vedioArr
-}
-
-
 </script>
 
 <template>
@@ -131,8 +96,6 @@ const clickHot =async () =>{
         <el-aside class="aside">
           <Aside
           @getVedio="clickVideo"
-          @getMusic="clickMusic"
-          @getHot="clickHot"
           >
           </Aside>
         </el-aside>

@@ -13,32 +13,24 @@ var mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 // 根据marker信息以及请求路径获取相应的视频链接
 router.get('/total', function(req, res, next) {
   // 获取本地marker信息
+  console.log(req.query.type);
+  let type = req.query.type
   let jsonData = fs.readFileSync('./public/marker.json','utf-8');
   // 解析json数据
   const data = JSON.parse(jsonData);
-  let marker = data.marker
-  getLink(res,'',marker)
+  let marker;
+  let path = ''
+  if(type == 'total' ){
+    marker = data.marker
+  }else if(type == 'music'){
+    marker = data.marker2
+    path = type
+  }else if(type == 'hot'){
+    marker = data.marker1
+    path = type
+  }
+  getLink(res,path,marker)
   
-});
-
-// 根据marker信息以及请求路径获取相应的视频链接
-router.get('/hot', function(req, res, next) {
-  // 获取本地marker信息
-  let jsonData = fs.readFileSync('./public/marker.json','utf-8');
-  // 解析json数据
-  const data = JSON.parse(jsonData);
-  let marker = data.marker1
-  getLink(res,'hot',marker)
-});
-
-// 根据marker信息以及请求路径获取相应的视频链接
-router.get('/music', function(req, res, next) {
-  // 获取本地marker信息
-  let jsonData = fs.readFileSync('./public/marker.json','utf-8');
-  // 解析json数据
-  const data = JSON.parse(jsonData);
-  let marker = data.marker2
-  getLink(res,'music',marker)
 });
 
  // 封装获取指定前缀视频路径的方法

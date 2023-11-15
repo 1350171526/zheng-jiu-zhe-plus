@@ -21,9 +21,9 @@ import { ref,defineEmits  } from "vue"
 const activeindex = ref(0)
 // 侧边导航列表信息
  const State = ref([
-  {id:1,name:'首页',icon:'iconfont icon-shouye'},
-  {id:2,name:"热门",icon:'iconfont icon-remen'},
-  {id:3,name:"音乐",icon:'iconfont icon-yinle'},
+  {id:1,name:'首页',icon:'iconfont icon-shouye',type:'total'},
+  {id:2,name:"热门",icon:'iconfont icon-remen',type:'hot'},
+  {id:3,name:"音乐",icon:'iconfont icon-yinle',type:'music'},
   {id:4,name:"体育",icon:'iconfont icon-tiyu'},
   {id:5,name:"直播",icon:'iconfont icon-zhibo'},
   {id:6,name:"美食",icon:'iconfont icon-meishi'},
@@ -34,15 +34,12 @@ const activeindex = ref(0)
   {id:11,name:"我的",icon:'iconfont icon-wode'},
 ]) 
 // 点击子组件触发父组件事件
-const emit = defineEmits(['getVedio','getMusic','getHot'])
+const emit = defineEmits(['getVedio'])
 const switchType = (item,index) =>{
   activeindex.value = index
-  if(item.id==1){
-    emit('getVedio')
-  }else if(item.id==2){
-    emit('getMusic')
-  }else if(item.id==3){
-    emit('getHot')
+  if(item.type){
+    // console.log(item.type);
+    emit('getVedio',item.type)
   }else{
     ElMessage({
       type: 'success',
