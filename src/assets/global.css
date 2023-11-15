@@ -1,0 +1,25 @@
+/* 全局动画样式 */
+@keyframes mymove {
+  50%{
+    transform-origin: bottom;
+    transform: rotate( -15deg ) scale(1.2);
+  }
+  80%{
+    transform-origin: bottom;
+    transform: rotate( 5deg ) scale(1.2);
+  }
+  100% {
+    transform-origin: bottom;
+    transform: rotate( 0deg ) scale(1.2);
+  }
+
+}
+@keyframes click {
+  50%{
+    transform: scale(0.1);
+  }
+  100%{
+    transform: scale(1);
+    color: #FE2C55;
+  }
+}
