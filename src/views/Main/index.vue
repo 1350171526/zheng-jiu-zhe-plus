@@ -1,39 +1,85 @@
 <script setup>
-import Avatar from '@/views/MainList/Avatar.vue'
-import Collect from '@/views/MainList/Collect.vue'
-import Comment from '@/views/MainList/Comment.vue'
-import Like from '@/views/MainList/Like.vue'
-import Share from '@/views/MainList/Share.vue'
-import More from '@/views/MainList/More.vue'
+import Avatar from './components/Avatar.vue'
+import Collect from './components/Collect.vue'
+import Comment from './components/Comment.vue'
+import Like from './components/Like.vue'
+import Share from './components/Share.vue'
+import More from './components/More.vue'
 
-import { onMounted, ref } from "vue"
+import { getVedioApi } from '@/apis/video';
+import {videoTypeStore} from '@/stores/videoTypeStore.js'
+const videoType = videoTypeStore()
+import { onMounted, ref, onBeforeUnmount, provide  } from "vue"
 onMounted(()=>{
+  videoType.getVedio(videoType.type)
   findvideocover()
+  keyListen()
 })
-const props = defineProps({
-  urlArr: {
-    type: Array, 
-    default: []
-  },
-  index: {
-    type: Number, 
-    default: 0
+// 页面卸载钱移除监听事件
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', changeVideo);
+})
+
+// 全局键盘上下键监听事件
+const keyListen = () =>{
+  document.addEventListener('keydown', changeVideo);
+}
+const changeVideo = (e) =>{
+  if(e.key == "ArrowUp"){
+      lastVedio()
   }
-})
-// 子组件触发父组件事件
-const emit = defineEmits(['nextVedio']['lastVedio'])
-const last = () =>{
-  emit('lastVedio')
+  if(e.key == "ArrowDown"){
+    nextVedio()
+  }
 }
-const next = () =>{
-  emit('nextVedio')
+let change = ref(false)
+// 下一个视频
+let nextTigger = 0
+provide('change',change)
+const nextVedio =async () =>{
+  // 节流防止频繁触发事件
+  const now = Date.now()
+  if(now - nextTigger<1000){
+    return 
+  }else if(videoType.index<videoType.urlArr.length-2){
+    change.value = !change.value
+    videoType.index++
+  }else{
+    change.value = !change.value
+    // 判断视频的分类
+    const res = await getVedioApi(videoType.type)
+    videoType.urlArr = [...videoType.urlArr,...res.data.vedioArr]
+    videoType.index++
+  }
+  nextTigger = now
 }
+// 上一个视频
+let lastTigger = 0
+const lastVedio = () =>{
+  // 节流防止频繁触发事件
+  let now = Date.now()
+  if(now - lastTigger<1000){
+    return
+  }else if(videoType.index>0){
+    change.value = !change.value
+    videoType.index--
+  }else{
+    ElMessage({
+      message: '已经是第一条视频',
+      type: 'success',
+      center: true,
+    })
+  }
+  lastTigger = now
+}
+
+
 // 鼠标滚轮事件
 const mousewheel = (e) =>{
   if(e.deltaY>0){
-    emit('nextVedio')
+    nextVedio()
   }else if(e.deltaY<0){
-    emit('lastVedio')
+    lastVedio()
   }
 }
 // canvas绘制视频第一帧作为视频空白区域背景
@@ -70,10 +116,6 @@ const isplay = () =>{
       video.value.pause()
     }
   }, 400);
-
-  
-
-  
 }
 </script>
 
@@ -85,14 +127,14 @@ const isplay = () =>{
       <div class="left">
         <video 
           playsinline="true"
-          :src="props.urlArr[props.index-1]" 
+          :src="videoType.urlArr[videoType.index-1]" 
           controls="controls" 
           type="video/mp4"
           preload
           muted
           controlsList="nodownload  noremoteplayback noplaybackrate" 
           disablePictureInPicture="true"
-          v-if="props.urlArr"
+          v-if="videoType.urlArr"
         ></video>
       </div>
       <!-- 当前视频 -->
@@ -101,7 +143,7 @@ const isplay = () =>{
           ref="video"
           id="upvideo"
           playsinline="true"
-          :src="props.urlArr[props.index]" 
+          :src="videoType.urlArr[videoType.index]" 
           controls="controls" 
           type="video/mp4"
           loop
@@ -109,7 +151,6 @@ const isplay = () =>{
           muted
           controlsList="nodownload  noremoteplayback noplaybackrate" 
           disablePictureInPicture="true"
-          v-if="props.urlArr"
         ></video>
         <div class="list">
           <div><Avatar/></div>
@@ -127,20 +168,20 @@ const isplay = () =>{
         <video 
           preload
           playsinline="true"
-          :src="props.urlArr[props.index+1]" 
+          :src="videoType.urlArr[videoType.index+1]" 
           controls="controls" 
           type="video/mp4"
           muted
           controlsList="nodownload  noremoteplayback noplaybackrate" 
           disablePictureInPicture="true"
-          v-if="props.urlArr"
+          v-if="videoType.urlArr"
         ></video>
       </div>
     </div>
     <!-- 右侧按钮 -->
     <div class="right">
-      <span class="iconfont icon-jiantoushang" @click="last()"></span>
-      <span class="iconfont icon-jiantouxia" @click="next()"></span>
+      <span class="iconfont icon-jiantoushang" @click="lastVedio()"></span>
+      <span class="iconfont icon-jiantouxia" @click="nextVedio()"></span>
 
     </div>
   </div>

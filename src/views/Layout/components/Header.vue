@@ -43,7 +43,7 @@ const onWindowResize = () => {
 
 <template>
   <div class="content">
-    <div class="left">
+    <div class="left" @click="$router.push('recommend')">
       <img src="../../../assets/images/logo.png" alt="">
       <div class="title" >七牛</div>
     </div>

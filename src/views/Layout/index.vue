@@ -1,90 +1,13 @@
 <script setup>
   import Aside from "./components/Aside.vue";
   import Headers from "./components/Header.vue";
-  import Main from "./components/Main.vue";
   // import { ElMessage } from 'element-plus'
-import { getVedioApi } from '@/apis/video';
-import { onMounted, ref, onBeforeUnmount, provide } from 'vue';
-
-
-const urlArr = ref([])
-let type = ref("total")
-// 获取首页视频
-// 后端返回一组视频的每条视频应该包含视频链接、视频作者id、头像信息、是否被此用户关注点赞或收藏，视频id、点赞数、评论数、收藏数、分享数、等信息
-const getVedio =async (type) =>{
-  const res = await getVedioApi(type)
-  urlArr.value = res.data.vedioArr
-}
-
-onMounted(() => {
-  getVedio(type.value)
-  keyListen()
-})
-// 页面卸载钱移除监听事件
-onBeforeUnmount(() => {
-  document.removeEventListener('keydown', changeVideo);
-})
-// 键盘上下键监听事件
-const keyListen = () =>{
-  document.addEventListener('keydown', changeVideo);
-}
-const changeVideo = (e) =>{
-  if(e.key == "ArrowUp"){
-      lastVedio()
-  }
-  if(e.key == "ArrowDown"){
-    nextVedio()
-  }
-}
-
-let change = ref(false)
-// 下一个视频
-let index = ref(0)
-let nextTigger = 0
-provide('change',change)
-const nextVedio =async () =>{
-  // 节流防止频繁触发事件
-  const now = Date.now()
-  if(now - nextTigger<1000){
-    return 
-  }else if(index.value<urlArr.value.length-2){
-    change.value = !change.value
-    index.value++
-  }else{
-    change.value = !change.value
-    // 判断视频的分类
-    const res = await getVedioApi(type.value)
-    urlArr.value = [...urlArr.value,...res.data.vedioArr]
-    index.value++
-  }
-  nextTigger = now
-}
-// 上一个视频
-let lastTigger = 0
-const lastVedio = () =>{
-  // 节流防止频繁触发事件
-  let now = Date.now()
-  if(now - lastTigger<1000){
-    return
-  }else if(index.value>0){
-    change.value = !change.value
-    index.value--
-  }else{
-    ElMessage({
-      message: '已经是第一条视频',
-      type: 'success',
-      center: true,
-    })
-  }
-  lastTigger = now
-}
+  import {videoTypeStore} from '@/stores/videoTypeStore.js'
+  const videoType = videoTypeStore()
 
 // 点击侧边栏分类视频
 const clickVideo = (types) =>{
-  type.value = types
-  urlArr.value = []
-  index.value = 0
-  getVedio(type.value)
+  videoType.clickVideo(types)
 }
 </script>
 
@@ -100,13 +23,8 @@ const clickVideo = (types) =>{
           </Aside>
         </el-aside>
         <el-main>
-          <Main 
-          :urlArr="urlArr" 
-          :index="index" 
-          @lastVedio="lastVedio()" 
-          @nextVedio="nextVedio()"
-          >
-          </Main>
+          <!-- 二级路由的出口组件 -->
+          <RouterView /> 
         </el-main>
       </el-container>
     </el-container>
