@@ -6,3 +6,10 @@ export function getVedioApi(type){
     params: {type}
   })
 }
+
+// 获取首页接口
+export function getHomeApi(){
+  return axios({
+    url: `/api/home`
+  })
+}

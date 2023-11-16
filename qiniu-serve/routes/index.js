@@ -29,19 +29,22 @@ router.get('/total', function(req, res, next) {
     marker = data.marker1
     path = type
   }
-  getLink(res,path,marker)
+  getLink(res,path,marker,5)
   
 });
 
+router.get('/home',function(req,res){
+  getLink(res,'music',null,20)
+})
  // 封装获取指定前缀视频路径的方法
-const getLink = (res,path,marker) =>{
+const getLink = (res,path,marker,num) =>{
   const vedioArr = [];
   var config = new qiniu.conf.Config();
   config.zone = qiniu.zone.Zone_z1;
   var bucketManager = new qiniu.rs.BucketManager(mac, config);
   var bucket = 'zheng-jiu-zhe';
   var options = {
-    limit: 5,
+    limit: num,
     prefix: path,
     marker: marker
   };

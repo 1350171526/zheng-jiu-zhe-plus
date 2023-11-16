@@ -220,7 +220,6 @@ const isplay = () =>{
   display: flex;
   align-items: center;
   overflow: hidden;
-
   .video{
     display: flex;
     flex-direction: column;
