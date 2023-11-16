@@ -18,8 +18,18 @@
 import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/el-message.css'
 import { useRouter } from 'vue-router';
+import {useRoute} from 'vue-router'
 const router = useRouter()
-import { ref,defineEmits  } from "vue"
+const route = useRoute()
+import { ref,defineEmits, onMounted  } from "vue"
+onMounted(()=>{
+  determine()
+})
+const determine = () =>{
+  if(route.path == '/recommend'){
+    activeindex.value = 0
+  }
+}
 const activeindex = ref(1)
 // 侧边导航列表信息
  const State = ref([
@@ -67,7 +77,7 @@ const switchType = (item,index) =>{
     width: 8vw;
     margin-left: 10px;
     white-space: nowrap;
-    height: 60px;
+    height: 50px;
     display: flex;
     justify-content:center;
     align-items: center;

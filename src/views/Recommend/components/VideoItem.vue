@@ -10,7 +10,6 @@ defineProps({
   }
 })
 
-// Math.floor(Math.random() * (450 - 200 + 1)) + 200; 
 </script>
 
 <template>
@@ -47,7 +46,7 @@ defineProps({
         z-index: 99;
         // object-fit: contain; 
         object-fit: cover; 
-        background-color: rgba(127, 255, 212, 0.331);
+        // background-color: rgba(127, 255, 212, 0.331);
       }
   }
 </style>

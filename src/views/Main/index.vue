@@ -37,6 +37,7 @@ let change = ref(false)
 let nextTigger = 0
 provide('change',change)
 const nextVedio =async () =>{
+  if(!videoType.urlArr.length) return
   // 节流防止频繁触发事件
   const now = Date.now()
   if(now - nextTigger<1000){
@@ -56,6 +57,7 @@ const nextVedio =async () =>{
 // 上一个视频
 let lastTigger = 0
 const lastVedio = () =>{
+  if(!videoType.urlArr.length) return
   // 节流防止频繁触发事件
   let now = Date.now()
   if(now - lastTigger<1000){
@@ -115,7 +117,7 @@ const isplay = () =>{
     }else{
       video.value.pause()
     }
-  }, 400);
+  }, 400)
 }
 </script>
 
@@ -151,6 +153,7 @@ const isplay = () =>{
           muted
           controlsList="nodownload  noremoteplayback noplaybackrate" 
           disablePictureInPicture="true"
+          v-if="videoType.urlArr"
         ></video>
         <div class="list">
           <div><Avatar/></div>

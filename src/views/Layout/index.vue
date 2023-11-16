@@ -43,6 +43,9 @@ const clickVideo = (types) =>{
       }
       .el-main{
         padding: 3vh !important;
+        margin-left: 0 !important; 
+        width: 100vw !important;
+      height: 100vh !important;
       }
     }
   }
@@ -56,8 +59,15 @@ const clickVideo = (types) =>{
     }
 
     .aside{
+      position: fixed;
+      z-index: 1000;
       width: 10vw;
       height: 90vh;
+    }
+    .el-main{
+      width: 90vw;
+      height: 90vh;
+      margin-left: 10vw;
     }
 
   }
